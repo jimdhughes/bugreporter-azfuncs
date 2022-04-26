@@ -9,6 +9,11 @@ It's designed to be horizontally scalable with some obvious caching work that wo
 Redis and Azure Cache is expensive though so this is all I'm willing to play with for now.
 
 ## Config
+### Tech Required:
+1. Azure Tenant
+2. Azure Functions
+3. CosmosDB
+4. TBD: Caching layer
 ### Environment Variables:
 ```
 "COSMOS_CONN_STR": "SECRET!"
