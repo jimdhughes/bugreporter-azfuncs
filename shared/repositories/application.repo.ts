@@ -5,6 +5,8 @@ import client from "../database/db";
 import { CreateApplicationDTO } from "../dto/application/application.dto";
 import { Application } from "../models/application.model";
 
+const CACHE_KEY = "application:";
+
 // TODO: Remove any from promise
 export const CreateApplication = async (application: CreateApplicationDTO): Promise<any> => {
   try {
@@ -22,7 +24,7 @@ export const CreateApplication = async (application: CreateApplicationDTO): Prom
       clientSecret: res.resource.clientSecret,
       supportTeam: res.resource.supportTeam
     };
-    cache.SetCachedItem<Application>(`application:${app.id}`, app);
+    cache.SetCachedItem<Application>(`${CACHE_KEY}${app.id}`, app);
     return application;
   } catch (e) {
     throw e;
@@ -31,12 +33,12 @@ export const CreateApplication = async (application: CreateApplicationDTO): Prom
 
 export const GetApplicationById = async (id: string): Promise<any> => {
   try {
-    let cacheResponse = cache.GetCachedItem<Application>(`application:${id}`);
+    let cacheResponse = cache.GetCachedItem<Application>(`${CACHE_KEY}${id}`);
     if (cacheResponse) {
       return cacheResponse
     }
     const cosmosResponse = await client.database(process.env.COSMOS_DBNAME).container(process.env.COSMOS_APPCONTAINERNAME).item(id).read<Application>();
-    cache.SetCachedItem(`application:${id}`, cosmosResponse.resource);
+    cache.SetCachedItem(`${CACHE_KEY}${id}`, cosmosResponse.resource);
     return cosmosResponse.resource;
   } catch (e) {
     throw e;
@@ -57,7 +59,7 @@ export const RefreshAppClientSecret = async (id: string): Promise<any> => {
     const res = await client.database(process.env.COSMOS_DBNAME).container(process.env.COSMOS_APPCONTAINERNAME).item(id).replace({
       clientSecret: uuid()
     });
-    cache.DeleteItemByKey(`application:${id}`);
+    cache.DeleteItemByKey(`${CACHE_KEY}${id}`);
     return res.resource;
   } catch (e) {
     throw e;
