@@ -1,6 +1,9 @@
+import { appendFile } from "fs";
 import { uuid } from "uuidv4";
+import cache from "../cache/cache";
 import client from "../database/db";
 import { CreateApplicationDTO } from "../dto/application/application.dto";
+import { Application } from "../models/application.model";
 
 // TODO: Remove any from promise
 export const CreateApplication = async (application: CreateApplicationDTO): Promise<any> => {
@@ -11,8 +14,16 @@ export const CreateApplication = async (application: CreateApplicationDTO): Prom
       .items.create({
         name: application.name,
         clientSecret: uuid(),
+        supportTeam: application.supportTeam
       })
-    return res.resource;
+    const app: Application = {
+      id: res.resource.id,
+      name: res.resource.name,
+      clientSecret: res.resource.clientSecret,
+      supportTeam: res.resource.supportTeam
+    };
+    cache.SetCachedItem<Application>(`application:${app.id}`, app);
+    return application;
   } catch (e) {
     throw e;
   }
@@ -20,8 +31,13 @@ export const CreateApplication = async (application: CreateApplicationDTO): Prom
 
 export const GetApplicationById = async (id: string): Promise<any> => {
   try {
-    const res = await client.database(process.env.COSMOS_DBNAME).container(process.env.COSMOS_APPCONTAINERNAME).item(id).read();
-    return res.resource;
+    let cacheResponse = cache.GetCachedItem<Application>(`application:${id}`);
+    if (cacheResponse) {
+      return cacheResponse
+    }
+    const cosmosResponse = await client.database(process.env.COSMOS_DBNAME).container(process.env.COSMOS_APPCONTAINERNAME).item(id).read<Application>();
+    cache.SetCachedItem(`application:${id}`, cosmosResponse.resource);
+    return cosmosResponse.resource;
   } catch (e) {
     throw e;
   }
@@ -41,6 +57,7 @@ export const RefreshAppClientSecret = async (id: string): Promise<any> => {
     const res = await client.database(process.env.COSMOS_DBNAME).container(process.env.COSMOS_APPCONTAINERNAME).item(id).replace({
       clientSecret: uuid()
     });
+    cache.DeleteItemByKey(`application:${id}`);
     return res.resource;
   } catch (e) {
     throw e;

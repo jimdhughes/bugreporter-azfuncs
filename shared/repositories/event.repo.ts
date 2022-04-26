@@ -5,7 +5,7 @@ export const CreateEvent = async (event: CreateEventDTO): Promise<any> => {
   try {
     const res = await client
       .database(process.env.COSMOS_DBNAME)
-      .container(process.env.COSMOS_APPCONTAINERNAME)
+      .container(process.env.COSMOS_EVENTCONTAINER_NAME)
       .items.create({
         ...event,
         createdAt: Date.now()
