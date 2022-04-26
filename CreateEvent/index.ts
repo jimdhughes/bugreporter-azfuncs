@@ -5,25 +5,31 @@ import { CreateEvent } from "../shared/repositories/event.repo";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     const event: CreateEventDTO = req.body;
-    const application = await GetApplicationById(event.clientId);
     try {
+        const application = await GetApplicationById(event.clientId);
         if (!application) {
+            context.log('no application, returning')
             context.res = {
                 status: 400,
                 body: "Invalid Credentials"
             }
+            return
         }
         else if (application.clientSecret !== event.clientSecret) {
+            context.log('invalid client secret, returning')
             context.res = {
                 status: 400,
                 body: "Invalid Credentials"
             }
+            return
+        } else {
+            await CreateEvent(event);
+            context.res = {
+                status: 200,
+                body: "OK"
+            };
         }
-        await CreateEvent(event);
-        context.res = {
-            status: 200,
-            body: "OK"
-        };
+
     } catch (e) {
         context.log(e)
         context.res = {

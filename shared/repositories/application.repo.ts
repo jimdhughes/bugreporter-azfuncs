@@ -35,6 +35,8 @@ export const GetApplicationById = async (id: string): Promise<any> => {
   try {
     let cacheResponse = cache.GetCachedItem<Application>(`${CACHE_KEY}${id}`);
     if (cacheResponse) {
+      console.log('returning cached response: ')
+      console.log(cacheResponse)
       return cacheResponse
     }
     const cosmosResponse = await client.database(process.env.COSMOS_DBNAME).container(process.env.COSMOS_APPCONTAINERNAME).item(id).read<Application>();
