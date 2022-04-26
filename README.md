@@ -26,6 +26,7 @@ Redis and Azure Cache is expensive though so this is all I'm willing to play wit
 "APP_CACHE_IN_SECONDS": 600
 ```
 ## How it works
+### Admin Functions
 1. Create an App Registration
 - Function Name: CreateAppRegistration
 - Supported Methods: POST
@@ -33,20 +34,30 @@ Redis and Azure Cache is expensive though so this is all I'm willing to play wit
 - Synopsis
   - Admins can create a new application. They will receive a ApplicationID and ClientSecret which they will need to include in request bodies when creating the events or bug reports from their applications.
   - We strongly suggest abstracting away your implementations such that your server is responsible for communicating with the service to prevent proliferation of secrets
-2. Create Events
+2. Get App Registrations
+3. Get App Registration By ID
+4. Get Cache Stats
+5. Refresh App Client Secret
+   
+### General Use
+1. Create Events
 - Function Name: CreateEvent
 - Support Methods: POST
 - Authentication: Anonymous
   - Caveat: you need to have a valid applicationid/secret combination
 - Synopsis:
   - TODO 
-3. Create Bug Reports
+2. Create Bug Reports
 - Function Name: CreateBugReport
 - Support Methods: POST
 - Authentication: Anonymous
   - Caveat: you need to have a valid applicationid/secret combination
 - Synopsis:
   - TODO 
+
+### Event Handlers
+1. On Bug Report
+2. 
 
 ## Future development
 This repo may completely turn on it's head once I decide to make support projects (javascript librarie for client-side plugins, server-side libraries, etc). I haven't decided if I like the idea of a monorepo or not.
