@@ -35,9 +35,13 @@ Redis and Azure Cache is expensive though so this is all I'm willing to play wit
   - Admins can create a new application. They will receive a ApplicationID and ClientSecret which they will need to include in request bodies when creating the events or bug reports from their applications.
   - We strongly suggest abstracting away your implementations such that your server is responsible for communicating with the service to prevent proliferation of secrets
 2. Get App Registrations
-3. Get App Registration By ID
-4. Get Cache Stats
-5. Refresh App Client Secret
+- Authentication: Admin
+4. Get App Registration By ID
+- Authentication: Admin
+6. Get Cache Stats
+- Authentication: Admin
+8. Refresh App Client Secret
+- Authentication: Admin
    
 ### General Use
 1. Create Events
